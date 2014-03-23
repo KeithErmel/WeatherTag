@@ -130,13 +130,49 @@ didDiscoverCharacteristicsForService:(CBService *)service
             [self logCharacteristic:characteristic];
             
             if ([self characteristicCanNotify:characteristic]) {
-                [self configurePeripheral:peripheral forService:service value:0x01];
-                [peripheral setNotifyValue:YES forCharacteristic:characteristic];
+                
+                [self.sensor didDiscoverNotifyCharacteristic:characteristic
+                                                  forService:service
+                                              withPeripheral:peripheral];
+                
+//                [self configurePeripheral:peripheral forService:service value:0x01];
+//                [peripheral setNotifyValue:YES forCharacteristic:characteristic];
             }
         }
     }
-    
 }
+
+
+-(void)configureSensor:(id<SensorTagSensor>)sensor
+            forService:(CBService *)service
+        withPeripheral:(CBPeripheral *)peripheral
+                 value:(uint8_t)value
+{
+    CBCharacteristic *config = [self characteristicForUUIDString:[sensor configUUIDString] forService:service];
+    if (config) {
+        NSData *data = [NSData dataWithBytes:&value length:1];
+        [peripheral writeValue:data
+             forCharacteristic:config
+                          type:CBCharacteristicWriteWithResponse];
+    }
+}
+
+-(CBCharacteristic *)characteristicForUUIDString:(NSString *)uuidString forService:(CBService *)service
+{
+    CBCharacteristic *result;
+    for (CBCharacteristic *characteristic in service.characteristics) {
+        if ([characteristic.UUID.UUIDString isEqualToString:uuidString]) {
+            result = characteristic;
+            break;
+        }
+    }
+    return result;
+}
+
+
+
+
+
 
 -(void)configureBarometer:(CBPeripheral *)peripheral service:(CBService *)service
 {
@@ -155,31 +191,6 @@ didDiscoverCharacteristicsForService:(CBService *)service
         }
     }
 }
-
--(BOOL)isBarometerService:(CBService *)service
-{
-    NSString *name = [self nameForService:service];
-    return [name isEqualToString:kBarometer];
-}
-
--(BOOL)isBarometerConfigCharacteristic:(CBCharacteristic *)characteristic
-{
-    NSString *uuidString = characteristic.UUID.UUIDString;
-    return [uuidString isEqualToString:kBarometerConfigUUID];
-}
-
--(BOOL)isBarometerCalibrationCharacteristic:(CBCharacteristic *)characteristic
-{
-    NSString *uuidString = characteristic.UUID.UUIDString;
-    return [uuidString isEqualToString:kBarometerCalibrationUUID];
-}
-
--(BOOL)isBarometerDataCharacteristic:(CBCharacteristic *)characteristic
-{
-    NSString *uuidString = characteristic.UUID.UUIDString;
-    return [uuidString isEqualToString:kBarometerDataUUID];
-}
-
 
               -(void)peripheral:(CBPeripheral *)peripheral
 didUpdateValueForCharacteristic:(CBCharacteristic *)characteristic
@@ -236,18 +247,6 @@ didWriteValueForCharacteristic:(CBCharacteristic *)characteristic
     return [self.serviceNameMap objectForKey:service.UUID.UUIDString];
 }
 
--(CBCharacteristic *)characteristicForUUID:(NSString *)uuidString forService:(CBService *)service
-{
-    CBCharacteristic *result;
-    for (CBCharacteristic *characteristic in service.characteristics) {
-        if ([characteristic.UUID.UUIDString isEqualToString:uuidString]) {
-            result = characteristic;
-            break;
-        }
-    }
-    return result;
-}
-
 -(BOOL)characteristicCanNotify:(CBCharacteristic *)characteristic
 {
     return characteristic.properties & CBCharacteristicPropertyNotify;
@@ -255,7 +254,7 @@ didWriteValueForCharacteristic:(CBCharacteristic *)characteristic
 
 -(CBCharacteristic *)configCharacteristicForService:(CBService *)service
 {
-    return [self characteristicForUUID:[self.configCharacteristicMap objectForKey:service.UUID.UUIDString]
+    return [self characteristicForUUIDString:[self.configCharacteristicMap objectForKey:service.UUID.UUIDString]
                             forService:service];
 }
 
@@ -288,6 +287,30 @@ didWriteValueForCharacteristic:(CBCharacteristic *)characteristic
 -(SensorTagDataHandler)dataHandlerForCharacteristic:(CBCharacteristic *)characteristic
 {
     return [self.dataHandlersMap objectForKey:characteristic.UUID.UUIDString];
+}
+
+-(BOOL)isBarometerService:(CBService *)service
+{
+    NSString *name = [self nameForService:service];
+    return [name isEqualToString:kBarometer];
+}
+
+-(BOOL)isBarometerConfigCharacteristic:(CBCharacteristic *)characteristic
+{
+    NSString *uuidString = characteristic.UUID.UUIDString;
+    return [uuidString isEqualToString:kBarometerConfigUUID];
+}
+
+-(BOOL)isBarometerCalibrationCharacteristic:(CBCharacteristic *)characteristic
+{
+    NSString *uuidString = characteristic.UUID.UUIDString;
+    return [uuidString isEqualToString:kBarometerCalibrationUUID];
+}
+
+-(BOOL)isBarometerDataCharacteristic:(CBCharacteristic *)characteristic
+{
+    NSString *uuidString = characteristic.UUID.UUIDString;
+    return [uuidString isEqualToString:kBarometerDataUUID];
 }
 
 
@@ -378,6 +401,7 @@ didWriteValueForCharacteristic:(CBCharacteristic *)characteristic
                          kHumidityDataUUID: ^(CBCharacteristic *c) {[self processHumidityData:c];},
                          kBarometerDataUUID: ^(CBCharacteristic *c) {[self processBarometerData:c];}};
 }
+
 
 #pragma mark - Initialization
 

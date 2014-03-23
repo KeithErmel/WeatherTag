@@ -20,6 +20,24 @@
 @end
 
 
+@protocol SensorTagSensor <NSObject>
+
+-(void)didDiscoverNotifyCharacteristic:(CBCharacteristic *)characteristic
+                            forService:(CBService *)service
+                        withPeripheral:(CBPeripheral *)peripheral;
+
+-(NSString *const)configUUIDString;
+@end
+
 @interface SensorTag : NSObject
 @property (weak) id<SensorTagDelegate> delegate;
+@property (weak) id<SensorTagSensor> sensor;
+
+-(void)configureSensor:(id<SensorTagSensor>)sensor
+            forService:(CBService *)service
+        withPeripheral:(CBPeripheral *)peripheral
+                 value:(uint8_t)value;
+
+-(CBCharacteristic *)characteristicForUUIDString:(NSString *)uuidString
+                                      forService:(CBService *)service;
 @end

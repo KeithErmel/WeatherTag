@@ -28,6 +28,7 @@
 		9E8283C018DF44BD00DEE407 /* NSString+Util.m in Sources */ = {isa = PBXBuildFile; fileRef = 9E8283BF18DF44BD00DEE407 /* NSString+Util.m */; };
 		9E8283C318DF470800DEE407 /* SensorTag.m in Sources */ = {isa = PBXBuildFile; fileRef = 9E8283C218DF470800DEE407 /* SensorTag.m */; };
 		9E8283C618DF59BF00DEE407 /* BarometerSensor.m in Sources */ = {isa = PBXBuildFile; fileRef = 9E8283C518DF59BF00DEE407 /* BarometerSensor.m */; };
+		9E8283C918DF743D00DEE407 /* TemperatureSensor.m in Sources */ = {isa = PBXBuildFile; fileRef = 9E8283C818DF743D00DEE407 /* TemperatureSensor.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -75,6 +76,8 @@
 		9E8283C218DF470800DEE407 /* SensorTag.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SensorTag.m; sourceTree = "<group>"; };
 		9E8283C418DF59BF00DEE407 /* BarometerSensor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BarometerSensor.h; sourceTree = "<group>"; };
 		9E8283C518DF59BF00DEE407 /* BarometerSensor.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BarometerSensor.m; sourceTree = "<group>"; };
+		9E8283C718DF743D00DEE407 /* TemperatureSensor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TemperatureSensor.h; sourceTree = "<group>"; };
+		9E8283C818DF743D00DEE407 /* TemperatureSensor.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TemperatureSensor.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -109,6 +112,8 @@
 				9E8283C518DF59BF00DEE407 /* BarometerSensor.m */,
 				9E8283C118DF470800DEE407 /* SensorTag.h */,
 				9E8283C218DF470800DEE407 /* SensorTag.m */,
+				9E8283C718DF743D00DEE407 /* TemperatureSensor.h */,
+				9E8283C818DF743D00DEE407 /* TemperatureSensor.m */,
 				9E1C914F18DF253D004052B2 /* WeatherDisplayViewController.h */,
 				9E1C915018DF253D004052B2 /* WeatherDisplayViewController.m */,
 			);
@@ -342,6 +347,7 @@
 				9E8283C018DF44BD00DEE407 /* NSString+Util.m in Sources */,
 				9E8283C318DF470800DEE407 /* SensorTag.m in Sources */,
 				9E40A05218DE643A008F6630 /* WeatherTagViewController.m in Sources */,
+				9E8283C918DF743D00DEE407 /* TemperatureSensor.m in Sources */,
 				9E1C915118DF253D004052B2 /* WeatherDisplayViewController.m in Sources */,
 				9E8283C618DF59BF00DEE407 /* BarometerSensor.m in Sources */,
 				9E40A02218DE6391008F6630 /* main.m in Sources */,
