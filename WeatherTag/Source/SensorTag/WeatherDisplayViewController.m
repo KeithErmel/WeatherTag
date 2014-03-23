@@ -37,6 +37,11 @@ unichar const kDegreesFahrenheit        = 0x2109;
     GCD_ON_MAIN_QUEUE(^{self.humidityLabel.text = [self NSStringFromHumidity:humidity];});
 }
 
+-(void)updateBarometerValue:(int)pressure
+{
+    GCD_ON_MAIN_QUEUE(^{self.barometerLabel.text = [self NSStringFromBarometer:pressure];});
+}
+
 
 #pragma mark - Internal API
 
@@ -49,6 +54,11 @@ unichar const kDegreesFahrenheit        = 0x2109;
 -(NSString *)NSStringFromHumidity:(float)humidity
 {
     return [NSString stringWithFormat:@"%0.1f%%rH", humidity];
+}
+
+-(NSString *)NSStringFromBarometer:(int)pressure
+{
+    return [NSString stringWithFormat:@"%d mBar",pressure];
 }
 
 

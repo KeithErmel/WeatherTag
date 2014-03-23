@@ -57,6 +57,11 @@ NSString *const kWeatherDisplaySegue    = @"weatherDisplaySegue";
     [self.weatherDisplayVC updateHumidityValue:humidityRH];
 }
 
+-(void)didReadPressure:(int)pressure
+{
+    [self.weatherDisplayVC updateBarometerValue:pressure];
+}
+
 
 #pragma mark - Internal API
 
