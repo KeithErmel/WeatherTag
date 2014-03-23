@@ -26,6 +26,7 @@
 		9E40A05218DE643A008F6630 /* WeatherTagViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 9E40A05018DE643A008F6630 /* WeatherTagViewController.m */; };
 		9E40A05418DE6454008F6630 /* CoreBluetooth.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9E40A05318DE6454008F6630 /* CoreBluetooth.framework */; };
 		9E8283C018DF44BD00DEE407 /* NSString+Util.m in Sources */ = {isa = PBXBuildFile; fileRef = 9E8283BF18DF44BD00DEE407 /* NSString+Util.m */; };
+		9E8283C318DF470800DEE407 /* SensorTag.m in Sources */ = {isa = PBXBuildFile; fileRef = 9E8283C218DF470800DEE407 /* SensorTag.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -69,6 +70,8 @@
 		9E40A05318DE6454008F6630 /* CoreBluetooth.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreBluetooth.framework; path = System/Library/Frameworks/CoreBluetooth.framework; sourceTree = SDKROOT; };
 		9E8283BE18DF44BD00DEE407 /* NSString+Util.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString+Util.h"; sourceTree = "<group>"; };
 		9E8283BF18DF44BD00DEE407 /* NSString+Util.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString+Util.m"; sourceTree = "<group>"; };
+		9E8283C118DF470800DEE407 /* SensorTag.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SensorTag.h; sourceTree = "<group>"; };
+		9E8283C218DF470800DEE407 /* SensorTag.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SensorTag.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -99,6 +102,8 @@
 		9E1C914E18DF24EC004052B2 /* SensorTag */ = {
 			isa = PBXGroup;
 			children = (
+				9E8283C118DF470800DEE407 /* SensorTag.h */,
+				9E8283C218DF470800DEE407 /* SensorTag.m */,
 				9E1C914F18DF253D004052B2 /* WeatherDisplayViewController.h */,
 				9E1C915018DF253D004052B2 /* WeatherDisplayViewController.m */,
 			);
@@ -330,6 +335,7 @@
 				9E1C91A618DF2AA6004052B2 /* UIView+Animations.m in Sources */,
 				9E1C91A518DF2AA6004052B2 /* UIStoryboardSegue+Utils.m in Sources */,
 				9E8283C018DF44BD00DEE407 /* NSString+Util.m in Sources */,
+				9E8283C318DF470800DEE407 /* SensorTag.m in Sources */,
 				9E40A05218DE643A008F6630 /* WeatherTagViewController.m in Sources */,
 				9E1C915118DF253D004052B2 /* WeatherDisplayViewController.m in Sources */,
 				9E40A02218DE6391008F6630 /* main.m in Sources */,
