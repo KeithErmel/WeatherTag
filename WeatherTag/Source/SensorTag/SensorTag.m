@@ -9,21 +9,29 @@
 #import "SensorTag.h"
 #import "NSString+Util.h"
 
+
 NSString *const kTemperature            = @"temperature";
 NSString *const kHumidity               = @"humidity";
 NSString *const kBarometer              = @"barometer";
 
 NSString *const kTemperatureData        = @"temperature.data";
+NSString *const kHumidityData           = @"humidity.data";
+//NSString *const kBarometerData          = @"barometer.data";
 
 NSString *const kTemperatureServiceUUID = @"F000AA00-0451-4000-B000-000000000000";
 NSString *const kHumidityServiceUUID    = @"F000AA20-0451-4000-B000-000000000000";
 NSString *const kBarometerServiceUUID   = @"F000AA40-0451-4000-B000-000000000000";
 
 NSString *const kTemperatureConfigUUID  = @"F000AA02-0451-4000-B000-000000000000";
+NSString *const kHumidityConfigUUID     = @"F000AA22-0451-4000-B000-000000000000";
+//NSString *const kBarometerConfigUUID     = @"";
 
 NSString *const kTemperatureDataUUID    = @"F000AA01-0451-4000-B000-000000000000";
-//NSString *const kHumidityDataUUID       = @"";
+NSString *const kHumidityDataUUID       = @"F000AA21-0451-4000-B000-000000000000";
 //NSString *const kBarometerDataUUID      = @"";
+
+
+typedef void(^SensorTagDataHandler)(CBCharacteristic *characteristic);
 
 
 @interface SensorTag ()<CBCentralManagerDelegate,CBPeripheralDelegate>
@@ -36,6 +44,8 @@ NSString *const kTemperatureDataUUID    = @"F000AA01-0451-4000-B000-000000000000
 @property (strong, readonly) NSDictionary *configCharacteristicMap;
 
 @property (strong, readonly) NSDictionary *characteristicNameMap;
+@property (strong, readonly) NSDictionary *dataHandlersMap;
+
 @end
 
 
@@ -106,13 +116,12 @@ didDiscoverCharacteristicsForService:(CBService *)service
             error:(NSError *)error
 {
     NSLog(@"didDiscoverCharacteristicsForService: %@", [self serviceNameForService:service]);
-    CBCharacteristic *config = [self characteristicForUUID:kTemperatureConfigUUID forService:service];
     
     for (CBCharacteristic *characteristic in service.characteristics) {
         [self logCharacteristic:characteristic];
         
         if ([self characteristicCanNotify:characteristic]) {
-            [self configurSensorTag:peripheral characteristic:config enabled:YES];
+            [self configureSensorTag:peripheral forService:service enabled:YES];
             [peripheral setNotifyValue:YES forCharacteristic:characteristic];
         }
     }
@@ -126,20 +135,15 @@ didUpdateValueForCharacteristic:(CBCharacteristic *)characteristic
           [self characteristicNameForCharacteristic:characteristic]);
     NSLog(@"  %ld bytes", (unsigned long)characteristic.value.length);
     
-    if ([self isTemperatureCharacteristic:characteristic]) {
-        float temperature = [self temperatureFromData:characteristic.value];
-        [self.delegate didReadTemperature:temperature];
+    SensorTagDataHandler handler = [self dataHandlerForCharacteristic:characteristic];
+    if (handler) {
+        handler(characteristic);
     }
 }
 
--(BOOL)isTemperatureCharacteristic:(CBCharacteristic *)characteristic
-{
-    return [self.characteristicNameMap objectForKey:characteristic.UUID.UUIDString] != nil;
-}
-
--(void)peripheral:(CBPeripheral *)peripheral
+             -(void)peripheral:(CBPeripheral *)peripheral
 didWriteValueForCharacteristic:(CBCharacteristic *)characteristic
-            error:(NSError *)error
+                         error:(NSError *)error
 {
     NSLog(@"didWriteValueForCharacteristic: %@\n  error: %@", characteristic.UUID.UUIDString, error);
 }
@@ -179,14 +183,21 @@ didWriteValueForCharacteristic:(CBCharacteristic *)characteristic
     return characteristic.properties & CBCharacteristicPropertyNotify;
 }
 
--(void)configurSensorTag:(CBPeripheral *)peripheral
-          characteristic:(CBCharacteristic *)characteristic
-                 enabled:(BOOL)enabled
+-(CBCharacteristic *)configCharacteristicForService:(CBService *)service
 {
+    return [self characteristicForUUID:[self.configCharacteristicMap objectForKey:service.UUID.UUIDString]
+                            forService:service];
+}
+
+-(void)configureSensorTag:(CBPeripheral *)peripheral
+               forService:(CBService *)service
+                  enabled:(BOOL)enabled
+{
+    CBCharacteristic *config = [self configCharacteristicForService:service];
     uint8_t bytes = enabled ? 0x01 : 0x00;
     NSData *data = [NSData dataWithBytes:&bytes length:1];
     [peripheral writeValue:data
-         forCharacteristic:characteristic
+         forCharacteristic:config
                       type:CBCharacteristicWriteWithResponse];
 }
 
@@ -203,13 +214,44 @@ didWriteValueForCharacteristic:(CBCharacteristic *)characteristic
     return [self.characteristicNameMap objectForKey:characteristic.UUID.UUIDString];
 }
 
+-(SensorTagDataHandler)dataHandlerForCharacteristic:(CBCharacteristic *)characteristic
+{
+    return [self.dataHandlersMap objectForKey:characteristic.UUID.UUIDString];
+}
+
+
+#pragma mark - Temperature Data
+
+-(void)processTemperatureData:(CBCharacteristic *)characteristic
+{
+    float temperature = [self temperatureFromData:characteristic.value];
+    [self.delegate didReadTemperature:temperature];
+}
+
 -(float)temperatureFromData:(NSData *)data {
-    char scratchVal[data.length];
-    int16_t ambTemp;
-    [data getBytes:&scratchVal length:data.length];
-    ambTemp = ((scratchVal[2] & 0xff)| ((scratchVal[3] << 8) & 0xff00));
+    char buffer[data.length];
+    [data getBytes:&buffer length:data.length];
     
-    return (float)((float)ambTemp / (float)128);
+    int16_t temperature = ((buffer[2] & 0xff)| ((buffer[3] << 8) & 0xff00));
+    return (float)((float)temperature / (float)128);
+}
+
+#pragma mark - Humidity Data
+
+-(void)processHumidityData:(CBCharacteristic *)characteristic
+{
+    float humidityRH = [self pressureFromData:characteristic.value];
+    [self.delegate didReadHumidity:humidityRH];
+}
+
+
+-(float)pressureFromData:(NSData *)data
+{
+    char buffer[data.length];
+    [data getBytes:&buffer length:data.length];
+    
+    UInt16 humidity = (buffer[2] & 0xff) | ((buffer[3] << 8) & 0xff00);
+    return -6.0f + 125.0f * (float)((float)humidity/(float)65535);;
 }
 
 
@@ -231,16 +273,22 @@ didWriteValueForCharacteristic:(CBCharacteristic *)characteristic
 
 -(void)configureDataStructures
 {
-    _scannedServices = @[[CBUUID UUIDWithString:kTemperatureServiceUUID]/*,
-                                                                         [CBUUID UUIDWithString:kHumidityServiceUUID],
-                                                                         [CBUUID UUIDWithString:kBarometerServiceUUID]*/];
+    _scannedServices = @[[CBUUID UUIDWithString:kTemperatureServiceUUID],
+                         [CBUUID UUIDWithString:kHumidityServiceUUID],
+                         /*[CBUUID UUIDWithString:kBarometerServiceUUID]*/];
     
-    _serviceNameMap = @{kTemperatureServiceUUID: kTemperature/*,
-                                                              kHumidityServiceUUID: kHumidityKey,
-                                                              kBarometerServiceUUID: kBarometerKey*/};
-    _characteristicNameMap = @{kTemperatureDataUUID: kTemperatureData};
+    _serviceNameMap = @{kTemperatureServiceUUID: kTemperature,
+                        kHumidityServiceUUID: kHumidity,
+                        /*kBarometerServiceUUID: kBarometer*/};
     
-    _configCharacteristicMap = @{kTemperatureServiceUUID: kTemperatureConfigUUID};
+    _characteristicNameMap = @{kTemperatureDataUUID: kTemperatureData,
+                               kHumidityDataUUID: kHumidityData};
+    
+    _configCharacteristicMap = @{kTemperatureServiceUUID: kTemperatureConfigUUID,
+                                 kHumidityServiceUUID: kHumidityConfigUUID};
+    
+    _dataHandlersMap = @{kTemperatureDataUUID: ^(CBCharacteristic *c) {[self processTemperatureData:c];},
+                         kHumidityDataUUID: ^(CBCharacteristic *c) {[self processHumidityData:c];}};
 }
 
 #pragma mark - Initialization

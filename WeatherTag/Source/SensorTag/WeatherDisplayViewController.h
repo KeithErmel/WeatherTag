@@ -10,4 +10,5 @@
 
 @interface WeatherDisplayViewController : UIViewController
 -(void)updateTemperatureValue:(float)temperature;
+-(void)updateHumidityValue:(float)humidity;
 @end

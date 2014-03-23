@@ -29,9 +29,12 @@ unichar const kDegreesFahrenheit        = 0x2109;
 
 -(void)updateTemperatureValue:(float)temperature
 {
-    GCD_ON_MAIN_QUEUE(^{
-        self.temperatureLabel.text = [self NSStringFromTemperature:temperature celsius:YES];
-    });
+    GCD_ON_MAIN_QUEUE(^{self.temperatureLabel.text = [self NSStringFromTemperature:temperature celsius:YES];});
+}
+
+-(void)updateHumidityValue:(float)humidity
+{
+    GCD_ON_MAIN_QUEUE(^{self.humidityLabel.text = [self NSStringFromHumidity:humidity];});
 }
 
 
@@ -42,5 +45,11 @@ unichar const kDegreesFahrenheit        = 0x2109;
     unichar degreesSymbol = (unichar)(celsius ? kDegreesCelsius : kDegreesFahrenheit);
     return [NSString stringWithFormat:@"%3.2f%C", temperature, degreesSymbol];
 }
+
+-(NSString *)NSStringFromHumidity:(float)humidity
+{
+    return [NSString stringWithFormat:@"%0.1f%%rH", humidity];
+}
+
 
 @end

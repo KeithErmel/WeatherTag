@@ -52,6 +52,14 @@ NSString *const kWeatherDisplaySegue    = @"weatherDisplaySegue";
     [self.weatherDisplayVC updateTemperatureValue:temperature];
 }
 
+-(void)didReadHumidity:(float)humidityRH
+{
+    [self.weatherDisplayVC updateHumidityValue:humidityRH];
+}
+
+
+#pragma mark - Internal API
+
 -(void)updateSensorTagLabel:(NSString *)message
 {
     GCD_ON_MAIN_QUEUE(^{self.sensorTagLabel.text = message;});

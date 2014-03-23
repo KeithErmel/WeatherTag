@@ -15,6 +15,7 @@
 -(void)didConnectToSensorTag;
 -(void)didDisconnectFromSensorTag;
 -(void)didReadTemperature:(float)temperature;
+-(void)didReadHumidity:(float)humidityRH;
 @end
 
 
