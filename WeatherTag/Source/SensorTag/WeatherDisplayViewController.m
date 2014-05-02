@@ -7,7 +7,6 @@
 //
 
 #import "WeatherDisplayViewController.h"
-#import "GCDTools.h"
 
 
 unichar const kDegreesSymbol            = 0x00B0;
@@ -29,17 +28,23 @@ unichar const kDegreesFahrenheit        = 0x2109;
 
 -(void)updateTemperatureValue:(float)temperature
 {
-    GCD_ON_MAIN_QUEUE(^{self.temperatureLabel.text = [self NSStringFromTemperature:temperature celsius:YES];});
+    dispatch_async(dispatch_get_main_queue(), ^{
+        self.temperatureLabel.text = [self NSStringFromTemperature:temperature celsius:YES];
+    });
 }
 
 -(void)updateHumidityValue:(float)humidity
 {
-    GCD_ON_MAIN_QUEUE(^{self.humidityLabel.text = [self NSStringFromHumidity:humidity];});
+    dispatch_async(dispatch_get_main_queue(), ^{
+        self.humidityLabel.text = [self NSStringFromHumidity:humidity];
+    });
 }
 
 -(void)updateBarometerValue:(int)pressure
 {
-    GCD_ON_MAIN_QUEUE(^{self.barometerLabel.text = [self NSStringFromBarometer:pressure];});
+    dispatch_async(dispatch_get_main_queue(), ^{
+        self.barometerLabel.text = [self NSStringFromBarometer:pressure];
+    });
 }
 
 

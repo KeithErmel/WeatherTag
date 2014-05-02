@@ -26,9 +26,9 @@
     [super tearDown];
 }
 
-- (void)testExample
+- (void)test_that_testing_framework_is_operational
 {
-    XCTFail(@"No implementation for \"%s\"", __PRETTY_FUNCTION__);
+    XCTAssertTrue(YES, @"the unit test framework seems to be busted");
 }
 
 @end

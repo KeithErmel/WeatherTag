@@ -10,8 +10,7 @@
 
 #import "SensorTag.h"
 #import "WeatherDisplayViewController.h"
-#import "GCDTools.h"
-#import "UIStoryboardSegue+Utils.h"
+#import "Luokat/UIStoryboardSegue+Utils.h"
 
 
 NSString *const kWeatherDisplaySegue    = @"weatherDisplaySegue";
@@ -20,6 +19,7 @@ NSString *const kWeatherDisplaySegue    = @"weatherDisplaySegue";
 @interface WeatherTagViewController ()<SensorTagDelegate>
 @property (strong, nonatomic, readonly) WeatherDisplayViewController *weatherDisplayVC;
 @property (strong, readonly) SensorTag *sensorTag;
+
 // Outlets
 @property (weak, nonatomic) IBOutlet UILabel *sensorTagLabel;
 @property (weak, nonatomic) IBOutlet UIView *weatherDisplayView;
@@ -67,12 +67,14 @@ NSString *const kWeatherDisplaySegue    = @"weatherDisplaySegue";
 
 -(void)updateSensorTagLabel:(NSString *)message
 {
-    GCD_ON_MAIN_QUEUE(^{self.sensorTagLabel.text = message;});
+    dispatch_async(dispatch_get_main_queue(), ^{self.weatherDisplayView.hidden = NO;});
+
 }
 
 -(void)showWeatherDisplay
 {
-    GCD_ON_MAIN_QUEUE(^{self.weatherDisplayView.hidden = NO;});
+    dispatch_async(dispatch_get_main_queue(), ^{self.weatherDisplayView.hidden = NO;});
+
 }
 
 

@@ -8,7 +8,7 @@
 
 #import "SensorTag.h"
 #import "BarometerSensor.h"
-#import "NSString+Util.h"
+#import "Luokat/NSString+Utils.h"
 
 
 NSString *const kTemperature            = @"temperature";
